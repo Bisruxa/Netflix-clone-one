@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
 import "./row.css";
 import axios from "../../../utils/axios";
-import movieTrailer from 'movie-trailer' ;
-import YouTube from 'react-youtube';
+import movieTrailer from "movie-trailer";
+import YouTube from "react-youtube";
+
 const Row = ({ title, fetchUrl, isLargeRow }) => {
   const [movies, setMovies] = useState([]);
+  const [trailerUrl, setTrailerUrl] = useState(""); // Add trailerUrl state
   const base_url = "https://images.tmdb.org/t/p/original";
 
   useEffect(() => {
@@ -18,16 +20,16 @@ const Row = ({ title, fetchUrl, isLargeRow }) => {
     })();
   }, [fetchUrl]);
 
-
   const handleClick = (movie) => {
     if (trailerUrl) {
-      setTrailerUrl('');
+      setTrailerUrl(""); // Clear trailer URL
     } else {
       movieTrailer(movie?.title || movie?.name || movie?.original_name)
         .then((url) => {
           const urlParams = new URLSearchParams(new URL(url).search);
-          setTrailerUrl(urlParams.get('v'));
-        });
+          setTrailerUrl(urlParams.get("v")); // Set trailer URL
+        })
+        .catch((error) => console.log("Trailer not found", error)); // Handle errors
     }
   };
 
@@ -38,8 +40,6 @@ const Row = ({ title, fetchUrl, isLargeRow }) => {
       autoplay: 1,
     },
   };
-
-  console.log(movies);
 
   return (
     <div className="row">
@@ -57,8 +57,7 @@ const Row = ({ title, fetchUrl, isLargeRow }) => {
           />
         ))}
       </div>
-    
-      <div style={{ padding: '40px' }}>
+      <div style={{ padding: "40px" }}>
         {trailerUrl && <YouTube videoId={trailerUrl} opts={opts} />}
       </div>
     </div>
